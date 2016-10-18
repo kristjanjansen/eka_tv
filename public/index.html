@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            background: black;
+        }
+        #app {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #app img {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        
+        <img :src="currentImage.image" />
+
+    </div>
+
+    <script src="https://unpkg.com/vue@2.0.3/dist/vue.js"></script>
+    <script src="https://unpkg.com/kefir@3.5.2"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+                   
+
+        new Vue({
+          el: '#app',
+          data: {
+            key: {},
+            images: [
+                {
+                    id: 'tv1',
+                    image: './images/tv1.jpg',
+                    left: null,
+                    right: 'tv2',
+                    up: null,
+                    down: null,
+                },
+                {   
+                    id: 'tv2',
+                    image:'./images/tv2.png',
+                    left: 'tv1',
+                    right: 'tv3',
+                    up: null,
+                    down: null,
+                },
+                {   
+                    id: 'tv3',
+                    image:'./images/tv3.png',
+                    left: 'tv2',
+                    right: 'tv9',
+                    up: null,
+                    down: null,
+                },
+                {   
+                    id: 'tv9',
+                    image:'./images/tv9.jpg',
+                    left: 'tv3',
+                    right: 'tv10',
+                    up: null,
+                    down: null,
+                },
+                {   
+                    id: 'tv10',
+                    image:'./images/tv10.jpg',
+                    left: 'tv9',
+                    right: 'tv11',
+                    up: null,
+                    down: null,
+                },
+                {   
+                    id: 'tv11',
+                    image:'./images/tv11.jpg',
+                    left: 'tv10',
+                    right: 'tv12',
+                    up: null,
+                    down: null,
+                },
+                {   
+                    id: 'tv12',
+                    image:'./images/tv12.jpg',
+                    left: 'tv11',
+                    right: 'tv13',
+                    up: null,
+                    down: null,
+                },
+                {   
+                    id: 'tv13',
+                    image:'./images/tv13.jpg',
+                    left: 'tv12',
+                    right: 'tv14',
+                    up: null,
+                    down: null,
+                },
+                {   
+                    id: 'tv14',
+                    image:'./images/tv14.jpg',
+                    left: 'tv13',
+                    right: 'tv15',
+                    up: null,
+                    down: null,
+                },
+                {   
+                    id: 'tv15',
+                    image:'./images/tv15.png',
+                    left: 'tv14',
+                    right: 'tv16',
+                    up: null,
+                    down: null,
+                },
+                {   
+                    id: 'tv16',
+                    image:'./images/tv16.jpg',
+                    left: 'tv15',
+                    right: null,
+                    up: null,
+                    down: null,
+                },
+            ],
+            currentImageId: 'tv1'
+          },
+          computed: {
+            currentImage: function() {
+                return this.images.find(image => image.id == this.currentImageId)
+            }
+          },
+          mounted() {
+            var socket = io.connect();
+            /*
+            socket.on('key', key => {
+                if (this.currentImage[key]) {
+                    this.currentImageId = this.currentImage[key]
+                }
+            })
+            */
+            var keyboardKeymap = {
+                65: 'left',
+                83: 'right',
+                87: 'up',
+                90: 'down'
+            }
+            
+            var socketStream = Kefir.fromEvents(socket, 'key')
+            
+            var keyboardStream = Kefir.fromEvents(document, 'keydown', e => {
+                if (e.keyCode in keyboardKeymap) {
+                   return keyboardKeymap[e.keyCode]
+                }
+                return 'other'
+            })
+            
+            var stream = Kefir.merge([socketStream, keyboardStream])
+                .filter(value => value !== 'other')
+                .onValue(value => {
+                    if (this.currentImage[value]) {
+                        this.currentImageId = this.currentImage[value]
+                    }
+                })
+                .throttle(1000)
+                .log()
+
+          }
+        })
+
+
+
+    </script>
+
+</body>
+</html>
+
