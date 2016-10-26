@@ -45,11 +45,18 @@ io.on('connection', function (socket) {
         })
     */
 
-    Kefir.merge([consoleStream/*, joystickStream*/])
+    //socket.on('key', function (key) {
+        
+      //  socket.broadcast.emit('key', key);
+
+   // });
+
+    var socketStream = Kefir.fromEvents(socket, 'key')
+
+    Kefir.merge([consoleStream,/* joystickStream,*/ socketStream])
         .onValue(value => {
-            socket.emit('key', value)
+            socket.broadcast.emit('key', value)
         })
-        .log()
         
 })
 

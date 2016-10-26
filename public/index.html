@@ -33,41 +33,17 @@
         
         <img :src="currentImage.image" />
 
-        <div class="remote">
-            <svg width="100%" height="100%" preserveAspectRatio="none">
-                <polygon 
-                    v-for="remoteButton in remoteButtons"
-                    :points="remoteButton.points"
-                    @click="sendKey(remoteButton.key)"
-                    fill="black"
-                    stroke="white"
-                    stroke-width="1"
-                    opacity="0.5"
-                >
-            </svg>
-        </div>
-
     </div>
 
     <script src="https://unpkg.com/vue@2.0.3/dist/vue.js"></script>
     <script src="https://unpkg.com/kefir@3.5.2"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ismobilejs/0.4.0/isMobile.js"></script>
-    <script src="https://unpkg.com/eventemitter2@2.1.3"></script>
+
     <script>
         
-        var ee = new EventEmitter2()
-
         new Vue({
           el: '#app',
           data: {
-            remoteButtons: [
-                {key: 'left', points: '0,0 100,100 0,200'},
-                {key: 'right', points: '200,0 100,100 200,200'},
-                {key: 'top', points: '0,0 100,100 200,0'},
-                {key: 'bottom', points: '0,200 100,100 200,200'},
-            ],
-
             key: {},
             images: [
                 {
@@ -166,22 +142,11 @@
                 return this.images.find(image => image.id == this.currentImageId)
             }
           },
-          methods: {
-            sendKey: function(key) {
-                ee.emit('key', key)
-            }
-          },
           mounted() {
 
 
             var socket = io.connect();
-            /*
-            socket.on('key', key => {
-                if (this.currentImage[key]) {
-                    this.currentImageId = this.currentImage[key]
-                }
-            })
-            */
+
             var keyboardKeymap = {
                 65: 'left',
                 83: 'right',
@@ -189,10 +154,8 @@
                 90: 'down'
             }
 
-            var eventBus = new Vue()
 
             var socketStream = Kefir.fromEvents(socket, 'key')
-            var remoteStream = Kefir.fromEvents(ee, 'key')
             
             var keyboardStream = Kefir.fromEvents(document, 'keydown', e => {
                 if (e.keyCode in keyboardKeymap) {
@@ -201,15 +164,15 @@
                 return 'other'
             })
             
-            var stream = Kefir.merge([socketStream, keyboardStream, remoteStream])
+            var stream = Kefir.merge([socketStream, keyboardStream])
                 .filter(value => value !== 'other')
                 .onValue(value => {
                     if (this.currentImage[value]) {
                         this.currentImageId = this.currentImage[value]
                     }
                 })
-                .throttle(1000)
                 .log()
+               // .throttle(1000)
 
           }
         })
