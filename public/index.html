@@ -18,16 +18,13 @@
         }
         .remote {
             width: 100%;
-            height: 5rem;
+            hheight: 5rem;
             position: fixed;
             top: 0;
             right: 0;
             left: 0;
+            bottom: 0;
             display: flex;
-        }
-        .button {
-            border: 1px solid white;
-            flex: 1;
         }
     </style>
 </head>
@@ -37,7 +34,7 @@
         <img :src="currentImage.image" />
 
         <div class="remote">
-            <svg width="200" height="200">
+            <svg width="100%" height="100%" preserveAspectRatio="none">
                 <polygon 
                     v-for="remoteButton in remoteButtons"
                     :points="remoteButton.points"
@@ -48,8 +45,6 @@
                     opacity="0.5"
                 >
             </svg>
-            <div class="button" @click="sendKey('left')"></div>
-            <div class="button" @click="sendKey('right')"></div>
         </div>
 
     </div>
