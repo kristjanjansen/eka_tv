@@ -45,11 +45,11 @@ io.on('connection', function (socket) {
         })
     */
 
-    //socket.on('key', function (key) {
-        
-      //  socket.broadcast.emit('key', key);
+    socket.on('stage', function (stage) {
+        console.log(stage)
+        socket.broadcast.emit('stage', stage);
 
-   // });
+    });
 
     var socketStream = Kefir.fromEvents(socket, 'key')
 

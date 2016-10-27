@@ -144,8 +144,8 @@
           },
           mounted() {
 
-
             var socket = io.connect();
+            socket.emit('stage', this.currentImage)
 
             var keyboardKeymap = {
                 65: 'left',
@@ -153,7 +153,6 @@
                 87: 'up',
                 90: 'down'
             }
-
 
             var socketStream = Kefir.fromEvents(socket, 'key')
             
@@ -166,13 +165,14 @@
             
             var stream = Kefir.merge([socketStream, keyboardStream])
                 .filter(value => value !== 'other')
+                .throttle(1000)
                 .onValue(value => {
                     if (this.currentImage[value]) {
                         this.currentImageId = this.currentImage[value]
+                        socket.emit('stage', this.currentImage)
                     }
                 })
                 .log()
-               // .throttle(1000)
 
           }
         })
