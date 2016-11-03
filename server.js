@@ -59,7 +59,7 @@ io.on('connection', function (socket) {
     }
 
     var irStream = Kefir
-        .fromEvents(lirc_node, 'KEY_UP', function (data) {
+        .fromEvents(lirc_node, 'data', function (data) {
             if (irMap[data.key]) {
                 return irMap[data.key]
             }
