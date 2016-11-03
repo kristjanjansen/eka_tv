@@ -59,7 +59,7 @@ io.on('connection', function (socket) {
     }
 
     var irStream = Kefir
-        .fromEvents(lirc_node, 'data', data => {
+        .fromEvents(lirc_node, 'data', function (data) {
             if (irMap[data.key]) {
                 return irMap[data.key]
             }
@@ -77,7 +77,7 @@ io.on('connection', function (socket) {
     // Merge the key command streams and send them to clients
 
     Kefir.merge(streams)
-        .onValue(value => {
+        .onValue(function (value) {
             socket.broadcast.emit('key', value)
         })
         .log()
