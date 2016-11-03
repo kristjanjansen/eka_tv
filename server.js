@@ -46,14 +46,14 @@ io.on('connection', function (socket) {
         streams.push(joystickStream)    
     }
     */
-    
+
     // Get key command stream from IR remotes
 
     var irMap = {
         KEY_UP: 'up',
         KEY_RIGHT: 'right',
         KEY_DOWN: 'down',
-        KEY_LEFT: 'left'
+        KEY_LEFT: 'left',
         KEY_OK: 'ok',
         KEY_BACK: 'back'
     }
