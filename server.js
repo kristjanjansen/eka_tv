@@ -16,9 +16,9 @@ var streams = []
 lirc_node = require('lirc_node');
 lirc_node.init();
 
-var listenerId = lirc_node.addListener(function(data) {
+/*var listenerId = lirc_node.addListener(function(data) {
   console.log("Received IR keypress '" + data.key + "'' from remote '" + data.remote +"'");
-});
+});*/
 
 io.on('connection', function (socket) {
 
@@ -59,12 +59,12 @@ io.on('connection', function (socket) {
     }
 
     var irStream = Kefir
-        .fromEvents(lirc_node, 'data', function (data) {
+        .fromEvents(lirc_node, 'KEY_UP', function (data) {
             if (irMap[data.key]) {
                 return irMap[data.key]
             }
             return 'other'
-        })
+        }).log()
 
     streams.push(irStream)
 
