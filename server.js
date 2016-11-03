@@ -49,7 +49,8 @@ io.on('connection', function (socket) {
 
     // Get key command stream from IR remotes
 
-    var irMap = {
+    /*
+    var keys = {
         KEY_UP: 'up',
         KEY_RIGHT: 'right',
         KEY_DOWN: 'down',
@@ -57,15 +58,19 @@ io.on('connection', function (socket) {
         KEY_OK: 'ok',
         KEY_BACK: 'back'
     }
-
-    var irStream = Kefir
-        .fromEvents(lirc_node, 'KEY_OK', function (data) {
-            if (irMap[data.key]) {
-                return irMap[data.key]
-            }
-            return 'other'
-        }).log()
-
+    */
+    
+    var irStream = Kefir.fromEvents(lirc_node, 'KEY_UP', function (data) { return 'up' })
+    streams.push(irStream)
+    var irStream = Kefir.fromEvents(lirc_node, 'KEY_DOWN', function (data) { return 'down' })
+    streams.push(irStream)
+    var irStream = Kefir.fromEvents(lirc_node, 'KEY_LEFT', function (data) { return 'left' })
+    streams.push(irStream)
+    var irStream = Kefir.fromEvents(lirc_node, 'KEY_RIGHT', function (data) { return 'right' })
+    streams.push(irStream)
+    var irStream = Kefir.fromEvents(lirc_node, 'KEY_BACK', function (data) { return 'back' })
+    streams.push(irStream)
+    var irStream = Kefir.fromEvents(lirc_node, 'KEY_OK', function (data) { return 'ok' })
     streams.push(irStream)
 
     // Get key command streams from clients
