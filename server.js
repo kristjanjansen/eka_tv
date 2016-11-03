@@ -6,56 +6,89 @@ var ip = require('ip')
 var keypress = require('keypress')
 var Kefir = require('kefir')
 var HID = require('node-hid');
-var devices = HID.devices()
-
-// var device = new HID.HID('USB_040b_6533_14100000');
 
 var port = 7000
-
 app.use(express.static('public'))
 server.listen(port)
 
+var streams = []
+
+lirc_node = require('lirc_node');
+lirc_node.init();
+
+var listenerId = lirc_node.addListener(function(data) {
+  console.log("Received IR keypress '" + data.key + "'' from remote '" + data.remote +"'");
+});
+
 io.on('connection', function (socket) {
 
-    keypress(process.stdin)
+    // Get key command stream from joystick
+
+    var devices = HID.devices()
+    joystickId = 'USB_040b_6533_14200000'
+
+    if (devices.find(device => device.path === joystickId)) {
+
+        var device = new HID.HID(joystickId)
+        
+        var joystickStream = Kefir
+            .fromEvents(device, 'data', (data) => {
+                var key = 'other'
+                if (data[0] == 0) key = 'right'
+                if (data[0] == 255) key = 'left'
+                if (data[1] == 0) key = 'down'
+                if (data[1] == 255) key = 'up'
+                if (data[2] == 1) key = 'ok'
+                if (data[2] == 2) key = 'back'
+                return key
+            })
     
-    var consoleKeymap = {
-        a: 'left',
-        s: 'right',
-        q: 'quit'
+        streams.push(joystickStream)    
     }
 
-    var consoleStream = Kefir
-        .fromEvents(process.stdin, 'keypress', (ch, key) => {
-            if (key.name === 'c' && key.ctrl) {
-                process.exit()
-            }
-            return consoleKeymap[key.name] ?  consoleKeymap[key.name] : 'other'
-        })
-    
-    /*
-    var joystickStream = Kefir
-        .fromEvents(device, 'data', (data) => {
-            var key = 'other'
-            if (data[0] == 0) key = 'right'
-            if (data[0] == 255) key = 'left'
-            if (data[1] == 0) key = 'down'
-            if (data[1] == 255) key = 'up'
-            return key
-        })
-    */
+    // Get key command stream from IR remotes
 
-    Kefir.merge([consoleStream/*, joystickStream*/])
+    var irMap = {
+        KEY_UP: 'up',
+        KEY_RIGHT: 'right',
+        KEY_DOWN: 'down',
+        KEY_LEFT: 'left'
+        KEY_OK: 'ok',
+        KEY_BACK: 'back'
+    }
+
+    var irStream = Kefir
+        .fromEvents(lirc_node, 'data', data => {
+            if (irMap[data.key]) {
+                return irMap[data.key]
+            }
+            return 'other'
+        })
+
+    streams.push(irStream)
+
+    // Get key command streams from clients
+
+    var socketStream = Kefir.fromEvents(socket, 'key')
+    
+    streams.push(socketStream)
+
+    // Merge the key command streams and send them to clients
+
+    Kefir.merge(streams)
         .onValue(value => {
-            socket.emit('key', value)
+            socket.broadcast.emit('key', value)
         })
         .log()
+
+    // Stage feedback, optional
+
+    socket.on('stage', function (stage) {
+        socket.broadcast.emit('stage', stage);
+
+    });
         
 })
-
-
-process.stdin.setRawMode(true);
-process.stdin.resume();
 
 console.log(
   '\n' +

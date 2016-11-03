@@ -16,6 +16,16 @@
         #app img {
             width: 100%;
         }
+        .remote {
+            width: 100%;
+            hheight: 5rem;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+        }
     </style>
 </head>
 <body>
@@ -28,9 +38,9 @@
     <script src="https://unpkg.com/vue@2.0.3/dist/vue.js"></script>
     <script src="https://unpkg.com/kefir@3.5.2"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-                   
 
+    <script>
+        
         new Vue({
           el: '#app',
           data: {
@@ -133,21 +143,17 @@
             }
           },
           mounted() {
+
             var socket = io.connect();
-            /*
-            socket.on('key', key => {
-                if (this.currentImage[key]) {
-                    this.currentImageId = this.currentImage[key]
-                }
-            })
-            */
+            socket.emit('stage', this.currentImage)
+
             var keyboardKeymap = {
                 65: 'left',
                 83: 'right',
                 87: 'up',
                 90: 'down'
             }
-            
+
             var socketStream = Kefir.fromEvents(socket, 'key')
             
             var keyboardStream = Kefir.fromEvents(document, 'keydown', e => {
@@ -159,12 +165,13 @@
             
             var stream = Kefir.merge([socketStream, keyboardStream])
                 .filter(value => value !== 'other')
+                .throttle(1000)
                 .onValue(value => {
                     if (this.currentImage[value]) {
                         this.currentImageId = this.currentImage[value]
+                        socket.emit('stage', this.currentImage)
                     }
                 })
-                .throttle(1000)
                 .log()
 
           }
