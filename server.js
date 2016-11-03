@@ -5,7 +5,7 @@ var io = require('socket.io')(server)
 var ip = require('ip')
 var keypress = require('keypress')
 var Kefir = require('kefir')
-var HID = require('node-hid');
+// var HID = require('node-hid');
 
 var port = 7000
 app.use(express.static('public'))
@@ -23,7 +23,7 @@ var listenerId = lirc_node.addListener(function(data) {
 io.on('connection', function (socket) {
 
     // Get key command stream from joystick
-
+    /*
     var devices = HID.devices()
     joystickId = 'USB_040b_6533_14200000'
 
@@ -45,7 +45,8 @@ io.on('connection', function (socket) {
     
         streams.push(joystickStream)    
     }
-
+    */
+    
     // Get key command stream from IR remotes
 
     var irMap = {

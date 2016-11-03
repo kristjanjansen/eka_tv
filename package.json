@@ -7,7 +7,6 @@
     "kefir": "^3.5.2",
     "keypress": "^0.2.1",
     "lirc_node": "^0.0.4",
-    "node-hid": "^0.5.1",
     "socket.io": "^1.5.0"
   },
   "scripts": {
