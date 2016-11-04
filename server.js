@@ -59,9 +59,8 @@ io.on('connection', function (socket) {
 
     // Stage feedback, optional
 
-    socket.on('stage', function (stage) {
-        socket.broadcast.emit('stage', stage);
-
+    socket.on('state', function (state) {
+        socket.broadcast.emit('state', state);
     });
         
 })

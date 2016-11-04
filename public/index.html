@@ -18,7 +18,6 @@
         }
         .remote {
             width: 100%;
-            hheight: 5rem;
             position: fixed;
             top: 0;
             right: 0;
@@ -31,7 +30,7 @@
 <body>
     <div id="app">
         
-        <img :src="currentImage.image" />
+        <img :src="currentState.image" />
 
     </div>
 
@@ -45,7 +44,7 @@
           el: '#app',
           data: {
             key: {},
-            images: [
+            states: [
                 {
                     id: 'tv1',
                     image: './images/tv1.jpg',
@@ -157,17 +156,17 @@
                     back: null
                 },
             ],
-            currentImageId: 'tv1'
+            currentStateId: 'tv1'
           },
           computed: {
-            currentImage: function() {
-                return this.images.find(image => image.id == this.currentImageId)
+            currentState: function() {
+                return this.states.find(state => state.id == this.currentStateId)
             }
           },
           mounted() {
 
             var socket = io.connect();
-            socket.emit('state', this.currentImage)
+            socket.emit('state', this.currentState)
 
             var keyboardKeymap = {
                 65: 'left',
@@ -189,9 +188,9 @@
                 .filter(value => value !== 'other')
                 .throttle(1000)
                 .onValue(value => {
-                    if (this.currentImage[value]) {
-                        this.currentImageId = this.currentImage[value]
-                        socket.emit('state', this.currentImage)
+                    if (this.currentState[value]) {
+                        this.currentStateId = this.currentState[value]
+                        socket.emit('state', this.currentState)
                     }
                 })
                 .log()

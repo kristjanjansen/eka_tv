@@ -34,7 +34,7 @@
             align-items: center;
         }
         .button {
-            border: 1px solid rgba(255,255,255,0.5);
+            border: 1px solid rgba(255,255,255,0);
             width: 33vw;
             height: 33vw;
             display: flex;
@@ -45,8 +45,18 @@
         .circle {
             width: 30vw;
             height: 30vw;
-            border-radius: 15vw;
             border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 15vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+        }
+        .circle_small {
+            width: 16vw;
+            height: 16vw;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8vw;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -63,7 +73,7 @@
 </head>
 <body>
     <div id="app">
-            {{ stage }}
+            {{ state }}
             <div class="remote_top">
                 <div class="button" @click="sendKey('up')">
                     <div v-if="state.up" class="state"></div>
@@ -89,7 +99,7 @@
 
             <div class="remote_bottom">
                 <div class="button" @click="sendKey('back')">
-                    <div class="circle">
+                    <div class="circle_small">
                         <div v-if="state.back" class="state"></div>
                     </div>
                 </div>
@@ -108,7 +118,7 @@
         new Vue({
             el: '#app',
             data: {
-                stage: {}
+                state: {}
             },
             methods: {
                 sendKey: function(key) {
