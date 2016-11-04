@@ -5,8 +5,9 @@ var io = require('socket.io')(server)
 var ip = require('ip')
 var keypress = require('keypress')
 var Kefir = require('kefir')
+var lirc_node = require('lirc_node');
 
-var HID = require('node-hid');
+lirc_node.init();
 
 // Server setup
 
@@ -17,31 +18,22 @@ var streams = []
 
 io.on('connection', function (socket) {
 
-    // Get key command stream from joystick
+    // Get ir command stream
     
-        var devices = HID.devices()
-
-        joystickId = 'USB_040b_6533_14200000'
-
-        if (devices.find(device => device.path === joystickId)) {
-
-            var device = new HID.HID(joystickId)
-            
-            var joystickStream = Kefir
-                .fromEvents(device, 'data', (data) => {
-                    var key = 'other'
-                    if (data[0] == 0) key = 'right'
-                    if (data[0] == 255) key = 'left'
-                    if (data[1] == 0) key = 'down'
-                    if (data[1] == 255) key = 'up'
-                    if (data[2] == 1) key = 'ok'
-                    if (data[2] == 2) key = 'back'
-                    return key
-                })
-        
-            streams.push(joystickStream)    
-        }
+    var keys = {
+        KEY_UP: 'up',
+        KEY_RIGHT: 'right',
+        KEY_DOWN: 'down',
+        KEY_LEFT: 'left',
+        KEY_OK: 'ok',
+        KEY_BACK: 'back'
+    }
     
+    for (var key in keys) {
+        var irStream = Kefir.fromEvents(lirc_node, key, function (data) { return keys[key] })
+        streams.push(irStream)
+    }
+
     // Get key command streams from clients
 
     var socketStream = Kefir.fromEvents(socket, 'key')
