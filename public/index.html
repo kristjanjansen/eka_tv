@@ -2,42 +2,75 @@
 <html>
 <head>
     <title></title>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/codemirror.min.css">
     <style>
         body {
             padding: 0;
             margin: 0;
             background: black;
+            color: white;
+            font-family: sans-serif;
         }
-        #app {
+        .wrapper {
+            position: fixed;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 50vw;
+            height: 100%;
+            background: #eee;
+        }
+        img {
+            width: 100%;
+        }
+        .CodeMirror {
+            background: #eee;
+            color: #333;
+            font-size: 1.2em;
+            padding: 1rem;
+            height: auto;
+        }
+        .close {
+            width: 50px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        #app img {
-            width: 100%;
-        }
-        .remote {
-            width: 100%;
-            hheight: 5rem;
             position: fixed;
             top: 0;
             right: 0;
-            left: 0;
-            bottom: 0;
-            display: flex;
+            font-size: 1rem;
+            color: rgba(0,0,0,0);
+        }
+        .close:hover {
+            color: rgba(0,0,0,0.3);
         }
     </style>
 </head>
 <body>
     <div id="app">
         
-        <img :src="currentImage.image" />
+            <img :src="currentState.image" />
+
+            <div class="wrapper" v-show="showEditor">
+                <textarea rows="10" cols="100" v-model="yamlStates" ref="editor">
+                </textarea>
+            </div>
+
+            <div class="close" @click="showEditor = ! showEditor">
+                <div v-if="showEditor">X</div>
+                <div v-else>E</div>
+            </div>
+
+        </div>
 
     </div>
 
     <script src="https://unpkg.com/vue@2.0.3/dist/vue.js"></script>
     <script src="https://unpkg.com/kefir@3.5.2"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.6.1/js-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/codemirror.min.js"></script>
 
     <script>
         
@@ -45,119 +78,76 @@
           el: '#app',
           data: {
             key: {},
-            images: [
+            yamlStates: '',
+            states: [
                 {
                     id: 'tv1',
-                    image: './images/tv1.jpg',
+                    image: 'images/tv1.jpg',
                     left: null,
                     right: 'tv2',
                     up: null,
                     down: null,
+                    ok: null,
+                    back: null
                 },
-                {   
+                {
                     id: 'tv2',
-                    image:'./images/tv2.png',
+                    image: 'images/tv2.png',
                     left: 'tv1',
-                    right: 'tv3',
-                    up: null,
-                    down: null,
-                },
-                {   
-                    id: 'tv3',
-                    image:'./images/tv3.png',
-                    left: 'tv2',
-                    right: 'tv9',
-                    up: null,
-                    down: null,
-                },
-                {   
-                    id: 'tv9',
-                    image:'./images/tv9.jpg',
-                    left: 'tv3',
-                    right: 'tv10',
-                    up: null,
-                    down: null,
-                },
-                {   
-                    id: 'tv10',
-                    image:'./images/tv10.jpg',
-                    left: 'tv9',
-                    right: 'tv11',
-                    up: null,
-                    down: null,
-                },
-                {   
-                    id: 'tv11',
-                    image:'./images/tv11.jpg',
-                    left: 'tv10',
-                    right: 'tv12',
-                    up: null,
-                    down: null,
-                },
-                {   
-                    id: 'tv12',
-                    image:'./images/tv12.jpg',
-                    left: 'tv11',
-                    right: 'tv13',
-                    up: null,
-                    down: null,
-                },
-                {   
-                    id: 'tv13',
-                    image:'./images/tv13.jpg',
-                    left: 'tv12',
-                    right: 'tv14',
-                    up: null,
-                    down: null,
-                },
-                {   
-                    id: 'tv14',
-                    image:'./images/tv14.jpg',
-                    left: 'tv13',
-                    right: 'tv15',
-                    up: null,
-                    down: null,
-                },
-                {   
-                    id: 'tv15',
-                    image:'./images/tv15.png',
-                    left: 'tv14',
-                    right: 'tv16',
-                    up: null,
-                    down: null,
-                },
-                {   
-                    id: 'tv16',
-                    image:'./images/tv16.jpg',
-                    left: 'tv15',
                     right: null,
                     up: null,
                     down: null,
+                    ok: null,
+                    back: null
                 },
             ],
-            currentImageId: 'tv1'
+            currentStateId: 'tv1',
+            showEditor: true
           },
           computed: {
-            currentImage: function() {
-                return this.images.find(image => image.id == this.currentImageId)
+            currentState: function() {
+                return this.states.find(state => state.id == this.currentStateId)
             }
           },
           mounted() {
 
+            var editor = CodeMirror.fromTextArea(this.$refs.editor, {
+                mode: 'yaml',
+                tabSize: 2,
+                lineWrapping: true
+            });
+
+            if (localStorage.savedState) {
+                editor.setValue(localStorage.savedState)
+            } else {
+                editor.setValue(jsyaml.dump(this.states))
+            }
+
+            editor.on('change', (editor) => {
+                this.states = jsyaml.load(editor.getValue())
+                localStorage.savedState = editor.getValue()
+            })
+
+            this.showEditor = false
+            
             var socket = io.connect();
-            socket.emit('stage', this.currentImage)
+            socket.emit('state', this.currentState)
 
             var keyboardKeymap = {
-                65: 'left',
-                83: 'right',
-                87: 'up',
-                90: 'down'
+                37: 'left',
+                39: 'right',
+                38: 'up',
+                40: 'down',
+                13: 'ok',
+                32: 'ok',
+                8: 'back',
+                27: 'back',
             }
 
             var socketStream = Kefir.fromEvents(socket, 'key')
             
             var keyboardStream = Kefir.fromEvents(document, 'keydown', e => {
-                if (e.keyCode in keyboardKeymap) {
+                if (e.keyCode in keyboardKeymap && !this.showEditor) {
                    return keyboardKeymap[e.keyCode]
                 }
                 return 'other'
@@ -167,9 +157,9 @@
                 .filter(value => value !== 'other')
                 .throttle(1000)
                 .onValue(value => {
-                    if (this.currentImage[value]) {
-                        this.currentImageId = this.currentImage[value]
-                        socket.emit('stage', this.currentImage)
+                    if (this.currentState[value]) {
+                        this.currentStateId = this.currentState[value]
+                        socket.emit('state', this.currentState)
                     }
                 })
                 .log()

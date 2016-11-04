@@ -8,40 +8,102 @@
             margin: 0;
             background: #333;
         }
-        .remote {
-            width: 100%;
+        .remote_top {
             position: fixed;
             top: 0;
             right: 0;
             left: 0;
-            bottom: 0;
+            height: 100vw;
             display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .remote_bottom {
+            position: fixed;
+            right: 0;
+            left: 0;
+            bottom: 10vw;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .button_group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .button {
+            border: 1px solid rgba(255,255,255,0);
+            width: 33vw;
+            height: 33vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .circle {
+            width: 30vw;
+            height: 30vw;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 15vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+        }
+        .circle_small {
+            width: 16vw;
+            height: 16vw;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+        }
+        .state {
+            width: 10px;
+            height: 10px;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.5);
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
     <div id="app">
-        <div class="remote">
-            <svg height="100%" width="100%">
-                <svg viewBox="0 0 200 200" preserveAspectRatio="none">
-                    <polygon 
-                        v-for="remoteButton in remoteButtons"
-                        :points="remoteButton.points"
-                        @click="sendKey(remoteButton.key)"
-                        opacity="0"
-                        stroke="white"
-                        stroke-width="1"
-                    ></polygon>
-                </svg>
-                <svg viewBox="0 0 200 200">
-                    <circle cx="100" cy="100" r="35" stroke="white" opacity="0.2" fill="none"></circle>
-                    <circle v-if="stage.top" cx="100" cy="30" r="3" fill="white" opacity="0.2"></circle>
-                    <circle v-if="stage.right" cx="170" cy="100" r="3" fill="white" opacity="0.2"></circle>
-                    <circle v-if="stage.bottom" cx="100" cy="170" r="3" fill="white" opacity="0.2"></circle>
-                    <circle v-if="stage.left"cx="30" cy="100" r="3" fill="white" opacity="0.2"></circle>
-                </svg>
-            </svg>
-        </div>
+            {{ state }}
+            <div class="remote_top">
+                <div class="button" @click="sendKey('up')">
+                    <div v-if="state.up" class="state"></div>
+                </div>
+                <div class="button_group">
+
+                    <div class="button" @click="sendKey('left')">
+                        <div v-if="state.left" class="state"></div>
+                    </div>
+                    <div class="button" @click="sendKey('ok')">
+                        <div class="circle">
+                            <div v-if="state.ok" class="state"></div>
+                        </div>
+                    </div>
+                    <div class="button" @click="sendKey('right')">
+                        <div v-if="state.right" class="state"></div>
+                    </div>
+                </div>
+                <div class="button" @click="sendKey('down')">
+                    <div v-if="state.down" class="state"></div>
+                </div>
+            </div>
+
+            <div class="remote_bottom">
+                <div class="button" @click="sendKey('back')">
+                    <div class="circle_small">
+                        <div v-if="state.back" class="state"></div>
+                    </div>
+                </div>
+            </div>
 
     </div>
 
@@ -56,14 +118,7 @@
         new Vue({
             el: '#app',
             data: {
-                remoteButtons: [
-                    {key: 'top', points: '0,0 100,100 200,0'},
-                    {key: 'left', points: '0,0 100,100 0,200'},
-                    {key: 'bottom', points: '0,200 100,100 200,200'},
-                    {key: 'right', points: '200,0 100,100 200,200'},
-                ],
-                socket: io(),
-                stage: {}
+                state: {}
             },
             methods: {
                 sendKey: function(key) {
@@ -75,7 +130,7 @@
                 ee.on('key', key => {
                     socket.emit('key', key)
                 })
-                socket.on('stage', stage => this.stage = stage)
+                socket.on('state', state => this.state = state)
             }
         })
 
