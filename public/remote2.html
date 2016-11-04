@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            background: #333;
+        }
+        .remote_vertical {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20vw 10vw 50vw 10vw;
+        }
+        .remote_horizontal {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20vw 10vw 50vw 10vw;
+        }
+        .remote_bottom {
+            position: fixed;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-end;
+            height: 30vw;
+            padding-bottom: 10vw;
+        }
+        .button {
+            background: white;
+            border: red;
+            width: 10vw;
+            height: 10vw;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="remote_vertical">
+            <div class="button">1</div>
+            <div class="button">2</div>
+            <div class="button">3</div>
+        </div>
+        <div class="remote_horizontal">
+            <div class="button">4</div>
+            <div class="button">6</div>
+        </div>
+        <div class="remote_bottom">
+            <div class="button">7</div>
+        </div>
+
+    </div>
+
+    <script src="https://unpkg.com/vue@2.0.3/dist/vue.js"></script>
+    <script src="https://unpkg.com/kefir@3.5.2"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://unpkg.com/eventemitter2@2.1.3"></script>
+    <script>
+        
+        var ee = new EventEmitter2()
+
+        new Vue({
+            el: '#app',
+            data: {
+                socket: io(),
+                stage: {}
+            },
+            methods: {
+                sendKey: function(key) {
+                    ee.emit('key', key)
+                }
+            },
+            mounted() {
+                var socket = io()
+                ee.on('key', key => {
+                    socket.emit('key', key)
+                })
+                socket.on('stage', stage => this.stage = stage)
+            }
+        })
+
+
+
+    </script>
+
+</body>
+</html>
+

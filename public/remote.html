@@ -32,9 +32,28 @@
                         stroke="white"
                         stroke-width="1"
                     ></polygon>
+                    <circle
+                        cx="100"
+                        cy="100"
+                        r="35"
+                        stroke="white"
+                        opacity="0.2"
+                        fill="none"
+                        @click="sendKey('ok')"
+                    >
+                    <circle
+                        cx="100"
+                        cy="170"
+                        r="20"
+                        stroke="white"
+                        opacity="0.2"
+                        fill="none"
+                        @click="sendKey('back')"
+                    >
+                    </circle>
                 </svg>
                 <svg viewBox="0 0 200 200">
-                    <circle cx="100" cy="100" r="35" stroke="white" opacity="0.2" fill="none"></circle>
+                    <circle v-if="stage.ok" cx="100" cy="100" r="3" fill="white" opacity="0.2"></circle>
                     <circle v-if="stage.top" cx="100" cy="30" r="3" fill="white" opacity="0.2"></circle>
                     <circle v-if="stage.right" cx="170" cy="100" r="3" fill="white" opacity="0.2"></circle>
                     <circle v-if="stage.bottom" cx="100" cy="170" r="3" fill="white" opacity="0.2"></circle>
