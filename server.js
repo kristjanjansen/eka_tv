@@ -10,8 +10,10 @@ var HID = require('node-hid');
 
 // Server setup
 
+var port = 7000
+
 app.use(express.static('public'))
-server.listen(config.port)
+server.listen(port)
 
 var streams = []
 
@@ -67,8 +69,8 @@ io.on('connection', function (socket) {
 console.log(
   '\n' +
   'Server is running\n' +
-  'In this machine: http://localhost:' + config.port + '\n' +
-  'In local network: http://' + ip.address() + ':' + config.port + '\n' +
+  'In this machine: http://localhost:' + port + '\n' +
+  'In local network: http://' + ip.address() + ':' + port + '\n' +
   'To stop server, press Ctrl+C\n'
 
 )
