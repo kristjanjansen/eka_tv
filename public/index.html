@@ -53,6 +53,8 @@
                     right: 'tv2',
                     up: null,
                     down: null,
+                    ok: 'tv2',
+                    back: null
                 },
                 {   
                     id: 'tv2',
@@ -61,6 +63,8 @@
                     right: 'tv3',
                     up: null,
                     down: null,
+                    ok: null,
+                    back: null
                 },
                 {   
                     id: 'tv3',
@@ -69,6 +73,8 @@
                     right: 'tv9',
                     up: null,
                     down: null,
+                    ok: null,
+                    back: null
                 },
                 {   
                     id: 'tv9',
@@ -77,6 +83,8 @@
                     right: 'tv10',
                     up: null,
                     down: null,
+                    ok: null,
+                    back: null
                 },
                 {   
                     id: 'tv10',
@@ -85,6 +93,8 @@
                     right: 'tv11',
                     up: null,
                     down: null,
+                    ok: null,
+                    back: null
                 },
                 {   
                     id: 'tv11',
@@ -93,6 +103,8 @@
                     right: 'tv12',
                     up: null,
                     down: null,
+                    ok: null,
+                    back: null
                 },
                 {   
                     id: 'tv12',
@@ -101,6 +113,8 @@
                     right: 'tv13',
                     up: null,
                     down: null,
+                    ok: null,
+                    back: null
                 },
                 {   
                     id: 'tv13',
@@ -109,6 +123,8 @@
                     right: 'tv14',
                     up: null,
                     down: null,
+                    ok: null,
+                    back: null
                 },
                 {   
                     id: 'tv14',
@@ -117,6 +133,8 @@
                     right: 'tv15',
                     up: null,
                     down: null,
+                    ok: null,
+                    back: null
                 },
                 {   
                     id: 'tv15',
@@ -125,6 +143,8 @@
                     right: 'tv16',
                     up: null,
                     down: null,
+                    ok: null,
+                    back: null
                 },
                 {   
                     id: 'tv16',
@@ -133,6 +153,8 @@
                     right: null,
                     up: null,
                     down: null,
+                    ok: null,
+                    back: null
                 },
             ],
             currentImageId: 'tv1'
@@ -145,7 +167,7 @@
           mounted() {
 
             var socket = io.connect();
-            socket.emit('stage', this.currentImage)
+            socket.emit('state', this.currentImage)
 
             var keyboardKeymap = {
                 65: 'left',
@@ -169,7 +191,7 @@
                 .onValue(value => {
                     if (this.currentImage[value]) {
                         this.currentImageId = this.currentImage[value]
-                        socket.emit('stage', this.currentImage)
+                        socket.emit('state', this.currentImage)
                     }
                 })
                 .log()
