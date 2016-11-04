@@ -32,8 +32,7 @@ io.on('connection', function (socket) {
     }
     
     for (var key in keys) {
-        var irStream = Kefir.fromEvents(lirc_node, key, function (data) { return keys[key] })
-        streams.push(irStream)
+        streams.push(Kefir.fromEvents(lirc_node, key, function (data) { return keys[key] }))
     }
 
     // Get key command streams from clients
