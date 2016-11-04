@@ -40,10 +40,12 @@
             top: 0;
             right: 0;
             font-size: 1rem;
-            color: rgba(0,0,0,0);
+            color: rgba(255,255,255,0);
+            cursor: pointer;
         }
         .close:hover {
-            color: rgba(0,0,0,0.3);
+            color: rgba(255,255,255,0.8);
+            text-shadow: 1px 1px rgba(0,0,0,0.8);
         }
     </style>
 </head>
@@ -58,8 +60,8 @@
             </div>
 
             <div class="close" @click="showEditor = ! showEditor">
-                <div v-if="showEditor">X</div>
-                <div v-else>E</div>
+                <div v-if="showEditor">👏</div>
+                <div v-else>✍</div>
             </div>
 
         </div>
