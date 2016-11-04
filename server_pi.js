@@ -20,20 +20,20 @@ var streams = []
 
 io.on('connection', function (socket) {
 
-    // Get ir command stream
+    // Get ir command streams
 
-    var keys = {
-        KEY_UP: 'up',
-        KEY_RIGHT: 'right',
-        KEY_DOWN: 'down',
-        KEY_LEFT: 'left',
-        KEY_OK: 'ok',
-        KEY_BACK: 'back'
-    }
-    
-    for (var key in keys) {
-        streams.push(Kefir.fromEvents(lirc_node, key, function (data) { return keys[key] }))
-    }
+    var irStream = Kefir.fromEvents(lirc_node, 'KEY_UP', function (data) { return 'up' })
+    streams.push(irStream)
+    var irStream = Kefir.fromEvents(lirc_node, 'KEY_DOWN', function (data) { return 'down' })
+    streams.push(irStream)
+    var irStream = Kefir.fromEvents(lirc_node, 'KEY_LEFT', function (data) { return 'left' })
+    streams.push(irStream)
+    var irStream = Kefir.fromEvents(lirc_node, 'KEY_RIGHT', function (data) { return 'right' })
+    streams.push(irStream)
+    var irStream = Kefir.fromEvents(lirc_node, 'KEY_BACK', function (data) { return 'back' })
+    streams.push(irStream)
+    var irStream = Kefir.fromEvents(lirc_node, 'KEY_OK', function (data) { return 'ok' })
+    streams.push(irStream)
 
     // Get key command streams from clients
 
