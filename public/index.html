@@ -19,6 +19,7 @@
             width: 50vw;
             height: 100%;
             background: #eee;
+            overflow: scroll;
         }
         img {
             width: 100%;
@@ -26,7 +27,7 @@
         .CodeMirror {
             background: #eee;
             color: #333;
-            font-size: 1.2em;
+            font-size: 1.1em;
             padding: 1rem;
             height: auto;
         }
@@ -53,12 +54,12 @@
     <div id="app">
 
             <img
-                :src="currentState.image"
+                :src="currentState.background"
                 :style="{filter: currentState.invert ? 'invert(100%)': ''}"
             />
 
             <div class="wrapper" v-show="showEditor">
-                <textarea rows="10" cols="100" v-model="yamlStates" ref="editor">
+                <textarea v-model="yamlStates" ref="editor">
                 </textarea>
             </div>
 
@@ -87,7 +88,8 @@
             states: [
                 {
                     id: 'tv1',
-                    image: 'images/tv1.jpg',
+                    background: 'images/tv1.jpg',
+                    invert: false,
                     left: null,
                     right: 'tv2',
                     up: null,
@@ -97,7 +99,8 @@
                 },
                 {
                     id: 'tv2',
-                    image: 'images/tv2.png',
+                    background: 'images/tv2.png',
+                    invert: false,
                     left: 'tv1',
                     right: null,
                     up: null,
@@ -121,7 +124,7 @@
                 tabSize: 2,
                 lineWrapping: true
             });
-
+            editor.setSize({ height: '100%'})
             if (localStorage.savedState) {
                 editor.setValue(localStorage.savedState)
             } else {
