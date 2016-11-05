@@ -51,8 +51,11 @@
 </head>
 <body>
     <div id="app">
-        
-            <img :src="currentState.image" />
+
+            <img
+                :src="currentState.image"
+                :style="{filter: currentState.invert ? 'invert(100%)': ''}"
+            />
 
             <div class="wrapper" v-show="showEditor">
                 <textarea rows="10" cols="100" v-model="yamlStates" ref="editor">
