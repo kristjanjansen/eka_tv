@@ -1,3 +1,7 @@
+# eka_tv
+
+Prototyping TV UI and using IR remotes on Raspberry Pi. Part on the Estonian Academy prototyping course.
+
 ### Installing and starting the server
 
 #### OSX
